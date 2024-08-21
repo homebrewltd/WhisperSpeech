@@ -236,7 +236,7 @@ class RQBottleneckTransformer(nn.Module):
 
             self.positional_embedding = nn.Embedding(1500, width) # FIXME: should be self.stoks_len
 
-            self._out_blocks = nn.Sequential(*[
+            self.out_blocks = nn.Sequential(*[
                 ResidualAttentionBlock(width, n_head, qk_scale=qk_scale, ffn_mult=ffn_mult, rope=tunables.rope) for _ in range(depth)
             ])
             self.ln_post = LayerNorm(width)
@@ -306,7 +306,7 @@ class RQBottleneckTransformer(nn.Module):
             return x[:,::self.downsample]
         
     def out_blocks(self, x):
-        for l in self._out_blocks: x = l(x, self.positions)
+        for l in self.out_blocks: x = l(x, self.positions)
         return x
     
     def forward(self, samples, mask, input_toks, output_toks):
